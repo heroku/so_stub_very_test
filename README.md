@@ -194,7 +194,7 @@ class TestDoges < Minitest::Test
 
   def test_the_doge
     stub_get "/doge", "hi from doge"
-    assert_equal "hi from doge", Excon.get({ path: "/doge" }).body
+    assert_equal "hi from doge", Excon.get("http://www.example.com/doge").body
   end
 end
 ```
