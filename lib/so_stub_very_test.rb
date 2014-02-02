@@ -9,7 +9,7 @@ module SoStubVeryTest
   class NoPathGivenError       < StandardError; end
 
   def namespace(path, host = nil, &block)
-    if stub_paths.any? && stub_host != host
+    if stub_paths.any? && host && stub_host != host
       raise MixedNamespacesError, "Namespaces can't be mixed (#{stub_host} and #{host == nil ? "nil" : host})"
     end
 

@@ -100,6 +100,15 @@ class TestSoStubVeryTest < Minitest::Test
     assert_equal Excon.stubs, [[{ path: /\A\/foo\/bar\/baz\Z/, method: :get }, { body: true }]]
   end
 
+  def test_can_nest_default_host_namespace
+    # Will not raise MixedNamespacesError
+    SoStubVeryTest.default_host = "foo.example.com"
+    namespace "/foo" do
+      namespace "/bar" do
+      end
+    end
+  end
+
   def test_can_use_no_path_when_in_namespace
     namespace "/foo" do
       stub_get true
