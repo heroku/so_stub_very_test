@@ -10,7 +10,7 @@ module SoStubVeryTest
 
   def namespace(path, host = nil, &block)
     if stub_paths.any? && stub_host != host
-      raise MixedNamespacesError
+      raise MixedNamespacesError, "Namespaces can't be mixed (#{stub_host} and #{host == nil ? "nil" : host})"
     end
 
     stub_paths << path
@@ -134,13 +134,13 @@ module SoStubVeryTest
 
   def validate_path_given(path)
     if stub_paths.empty? && !path.is_a?(String)
-      raise NoPathGivenError
+      raise NoPathGivenError, "Must provide a path to stub requests for"
     end
   end
 
   def validate_single_response(block, response)
     if block && response
-      raise AmbiguousResponseError
+      raise AmbiguousResponseError, "Must provide only either a response object or a block"
     end
   end
 end
