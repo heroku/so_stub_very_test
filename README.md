@@ -132,6 +132,15 @@ SoStubVeryTest.defaults do
 end
 ```
 
+### Clearing the Stubs
+
+You can clear any non-default stubs with this cool method:
+
+```ruby
+SoStubVeryTest.clear_custom_stubs
+# congratulations you have defeated the stubs
+```
+
 ## Testing with SoStubVeryTest
 
 ### For RSpec
