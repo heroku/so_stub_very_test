@@ -148,6 +148,12 @@ class TestSoStubVeryTest < Minitest::Test
     assert_equal Excon.stubs, [[{ path: /\A\/foo\Z/, host: "foo.example.com", method: :get }, { body: true }]]
   end
 
+  def test_passing_string_body_to_namespaced_stub
+    SoStubVeryTest.register_host :foo, "foo.example.com"
+    foo_stub_get "/foo", "bar"
+    assert_equal Excon.stubs, [[{ path: /\A\/foo\Z/, host: "foo.example.com", method: :get }, { body: "bar" }]]
+  end
+
   def test_can_not_mismatch_namespaces
     SoStubVeryTest.register_host :foo, "foo.example.com"
 

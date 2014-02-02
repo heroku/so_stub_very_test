@@ -9,9 +9,7 @@ module SoStubVeryTest
   class NoPathGivenError       < StandardError; end
 
   def namespace(path, host = nil, &block)
-    if stub_paths.any? && host && stub_host != host
-      raise MixedNamespacesError, "Namespaces can't be mixed (#{stub_host} and #{host == nil ? "nil" : host})"
-    end
+    validate_host(host)
 
     stub_paths << path
     self.stub_host = host || default_host
@@ -25,7 +23,8 @@ module SoStubVeryTest
   end
 
   Excon::HTTP_VERBS.each do |verb|
-    define_method "stub_#{verb}" do |path, response = nil, &block|
+    define_method "stub_#{verb}" do |path, response = nil, host = nil, &block|
+      validate_host(host)
       validate_path_given(path)
 
       unless path.is_a? String
@@ -45,8 +44,8 @@ module SoStubVeryTest
 
       request = { method: verb, path: path }
 
-      if stub_host || default_host
-        request[:host] = stub_host || default_host
+      if host = get_request_host(host)
+        request[:host] = host
       end
 
       unless response.is_a?(Proc) || (response.is_a?(Hash) && response.has_key?(:body))
@@ -87,9 +86,7 @@ module SoStubVeryTest
 
       Excon::HTTP_VERBS.each do |verb|
         define_method "#{name}_stub_#{verb}" do |path, response = nil|
-          namespace path, host do
-            send "stub_#{verb}", response
-          end
+          send "stub_#{verb}", path, response, host
         end
       end
     end
@@ -110,6 +107,10 @@ module SoStubVeryTest
 
   def default_host
     SoStubVeryTest.default_host
+  end
+
+  def get_request_host(host)
+    stub_host || host || default_host
   end
 
   def replace_path_params(path)
@@ -135,6 +136,12 @@ module SoStubVeryTest
   def validate_path_given(path)
     if stub_paths.empty? && !path.is_a?(String)
       raise NoPathGivenError, "Must provide a path to stub requests for"
+    end
+  end
+
+  def validate_host(host)
+    if stub_paths.any? && host && stub_host != host
+      raise MixedNamespacesError, "Namespaces can't be mixed (#{stub_host} and #{host == nil ? "nil" : host})"
     end
   end
 
