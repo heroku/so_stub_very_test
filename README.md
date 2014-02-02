@@ -57,7 +57,7 @@ stub_get "/foo" do
     body: "no meme here"
   }
 end
-# Equivalent: Excon.stub({ path: /\A\/foo\Z/, method: :post }, { body: "no meme here" })
+# Equivalent: Excon.stub({ path: /\A\/foo\Z/, method: :get }, { body: "no meme here" })
 ```
 
 SoStubVeryTest will naïvely turn path parameters (any group of non-`/` preceded
