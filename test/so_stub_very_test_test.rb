@@ -1,4 +1,9 @@
-require "test_helper"
+require "so_stub_very_test"
+require "excon"
+require "minitest"
+require "minitest/autorun"
+require "minitest/pride"
+require "minitest/unit"
 
 class TestSoStubVeryTest < Minitest::Test
   include SoStubVeryTest
@@ -32,6 +37,11 @@ class TestSoStubVeryTest < Minitest::Test
   def test_can_stub_delete
     stub_delete "/foo", body: [true]
     assert_equal Excon.stubs, [[{ path: /\A\/foo\Z/, method: :delete }, body: [true]]]
+  end
+
+  def test_can_pass_request_params
+    stub_get({ path: "/foo", headers: { "Accept" => "bar" } }, [true])
+    assert_equal Excon.stubs, [[{ path: /\A\/foo\Z/, headers: { "Accept" => "bar" }, method: :get }, body: [true]]]
   end
 
   def test_performs_param_substitution

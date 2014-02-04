@@ -27,9 +27,16 @@ module SoStubVeryTest
       validate_host(host)
       validate_path_given(path)
 
-      unless path.is_a? String
+      unless is_request_options?(path) || path.is_a?(String)
         response = path
         path     = ""
+      end
+
+      if is_request_options?(path)
+        request = path
+        path    = request[:path]
+      else
+        request = {}
       end
 
       validate_single_response(block, response)
@@ -42,7 +49,7 @@ module SoStubVeryTest
       path = replace_path_params(path)
       path = create_path_regexp(path)
 
-      request = { method: verb, path: path }
+      request.merge!(method: verb, path: path)
 
       if host = get_request_host(host)
         request[:host] = host
@@ -113,6 +120,10 @@ module SoStubVeryTest
     stub_host || host || default_host
   end
 
+  def is_request_options?(options)
+    options.is_a?(Hash) && options.has_key?(:path)
+  end
+
   def replace_path_params(path)
     path.gsub /:[^\/]+/, '[^\/]+'
   end
@@ -134,7 +145,7 @@ module SoStubVeryTest
   end
 
   def validate_path_given(path)
-    if stub_paths.empty? && !path.is_a?(String)
+    if stub_paths.empty? && !(is_request_options?(path) || path.is_a?(String))
       raise NoPathGivenError, "Must provide a path to stub requests for"
     end
   end
