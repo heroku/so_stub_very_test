@@ -1,4 +1,4 @@
-Copyright (c) 2014 Jonathan Clem
+Copyright (c) 2014 Heroku
 
 MIT License
 
